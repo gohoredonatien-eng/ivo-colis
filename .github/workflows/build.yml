@@ -1,21 +1,31 @@
-name: Build IVO COLIS APK
+name: Construire IVO COLIS APK
 on:
   push:
   workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
-      - name: Install dependencies
+
+      - name: Installer Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Installer dependances
         run: |
-          sudo apt update
-          sudo apt install -y openjdk-17-jdk python3-pip zip unzip libltdl-dev libffi-dev libssl-dev
+          sudo apt-get update
+          sudo apt-get install -y python3-pip python3-setuptools python3-dev build-essential git zip unzip openjdk-17-jdk libncurses5-dev libssl-dev libffi-dev autoconf automake libtool pkg-config zlib1g-dev libltdl-dev
           pip install --upgrade pip
-          pip install buildozer cython==0.29.33
-      - name: Build with Buildozer
+          pip install buildozer==1.5.0 cython==0.29.33
+
+      - name: Build APK
         run: |
-          yes | buildozer android debug
+          buildozer -v android debug
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
